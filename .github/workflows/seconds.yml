@@ -8,6 +8,8 @@ on:
   workflow_run:
     workflows:
       - first
+    branches:
+      - feature/*
     types:
       - completed
 
