@@ -1,33 +1,58 @@
-# This is a basic workflow to help you get started with Actions
+on: 
+  - push
+  - pull_request
 
-name: first
-
-# Controls when the action will run. 
-on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
+  echo:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: Test action
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
-
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
+      - name: Get branch names
+        id: branch-name
+        uses: tj-actions/branch-names@v4
+        
+      - name: Running on the default branch.
+        if: steps.branch-name.outputs.is_default == 'true'
         run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+          echo "Running on default: ${{ steps.branch-name.outputs.current_branch }}"
+        # Outputs: "Running on default: main".
+      
+      - name: Running on a pull request branch.
+        if: steps.branch-name.outputs.is_default == 'false'
+        run: |
+          echo "Running on pr: ${{ steps.branch-name.outputs.current_branch }}"
+        # Outputs: "Running on pr: feature/test".
+      
+      - name: Current branch name
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "${{ steps.branch-name.outputs.current_branch }}"
+        # Outputs: "feature/test" current PR branch.
+      
+      - name: Current branch name
+        if: github.event_name == 'push'
+        run: |
+          echo "${{ steps.branch-name.outputs.current_branch }}"
+        # Outputs: "main" the branch that triggered the push event.
+      
+      - name: Get Ref brach name
+        run: |
+          echo "${{ steps.branch-name.outputs.ref_branch }}"
+        #  Outputs: "main" for non PR branches | "1/merge" for a PR branch
+
+      - name: Get Head Ref branch name
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "${{ steps.branch-name.outputs.head_ref_branch }}"
+        # Outputs: "feature/test" current PR branch.
+
+      - name: Get Base Ref branch name
+        if: github.event_name == 'pull_request'
+        run: |
+          echo "${{ steps.branch-name.outputs.base_ref_branch }}"
+        # Outputs: "main" for main <- PR branch.
+        
+      - name: Get the current tag
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          echo "${{ steps.branch-name.outputs.tag }}"
