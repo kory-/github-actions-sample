@@ -11,9 +11,9 @@ module.exports = async ({github, path}) => {
     console.log(logs);
 
     const { data } = await github.pulls.list({
-        owner: 'mocyuto',
-        repo: 'ec2-search',
-        base: 'master',
+        owner: 'kory-',
+        repo: 'github-actions-sample',
+        base: 'main',
         state: 'closed',
     })
     const res = data.map(d => {
