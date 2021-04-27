@@ -5,7 +5,7 @@ on:
 jobs:
   echo:
     runs-on: ubuntu-latest
-    name: Test action
+    name: Test action2
     steps:
       - name: Get branch names
         id: branch-name
